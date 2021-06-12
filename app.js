@@ -16,7 +16,7 @@
 // CODE START
 // In order to use the fs (File Structure) module, need to include the following at the top of JS
 const inquirer = require('inquirer');
-const fs = require('fs');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 const generatePage = require('./src/page-template.js');
 
 const promptUser = () => {
@@ -142,11 +142,37 @@ const promptProject = portfolioData => {
 promptUser()
     .then(promptProject)
     .then(portfolioData => {
-        const pageHTML = generatePage(portfolioData);
+        return generatePage(portfolioData);
+    })
+    .then(pageHTML => {
+        return writeFile(pageHTML);
+    })
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);
+    })
+    .catch(err => {
+        console.log(err);
 
-        fs.writeFile('./index.html', pageHTML, err => {
-            if (err) throw err;
+        // Removed so could make code consistently use Promises instead of a mixture of Promises and Callbacks (what is below)
+        // const pageHTML = generatePage(portfolioData);
 
-            console.log('Portfolio complete! Check out index.html to see the output!');
-        });
+        // fs.writeFile('./dist/index.html', pageHTML, err => {
+        //     if (err) {
+        //         console.log(err);
+        //         return;
+        //     }
+        //     console.log('Portfolio complete! Check out index.html to see the output!');
+
+        //     fs.copyFile('./src/style.css', './dist/style.css', err => {
+        //         if (err) {
+        //             console.log(err);
+        //             return;
+        //         }
+        //         console.log('Style sheet copied successfully!');
+        //     }); 
+        // });
     });
